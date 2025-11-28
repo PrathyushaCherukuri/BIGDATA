@@ -1,0 +1,3 @@
+2025-11-28 20:57:30,091 | INFO | myApp | loggingDemo.py:32 | Application started
+2025-11-28 20:57:30,101 | WARNING | myApp | loggingDemo.py:33 | Low disk space
+2025-11-28 20:57:30,112 | ERROR | myApp | loggingDemo.py:34 | Failed to read input file

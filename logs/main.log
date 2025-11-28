@@ -1,0 +1,4 @@
+2025-11-28 20:57:37,822 | INFO | main | Pipeline started
+2025-11-28 20:57:37,824 | INFO | main | Extracting data...
+2025-11-28 20:57:37,824 | ERROR | main | Failed to download file
+2025-11-28 20:57:37,824 | INFO | main | Pipeline completed
