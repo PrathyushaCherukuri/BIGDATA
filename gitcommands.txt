@@ -1,0 +1,12 @@
+git init
+git add .
+git commit -m 'message'
+git remote add origin 'repo link(ssh/https)'
+git push -u origin main
+
+//changes
+
+git add (filename) for specific file update
+git add . (for all files update)
+git commit -m 'message'
+git push 
