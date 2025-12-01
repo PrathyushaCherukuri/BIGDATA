@@ -1,6 +1,6 @@
 import mysql.connector
 
-# ------------------- DB CONNECTION -----------------------
+#  DB Connection 
 
 con = mysql.connector.connect(
     host="localhost",
@@ -11,7 +11,7 @@ con = mysql.connector.connect(
 
 cursor = con.cursor(dictionary=True)
 
-# ------------------- FUNCTIONS ---------------------------
+#  Functions 
 
 def load_items():
     cursor.execute("SELECT * FROM items")
@@ -45,7 +45,7 @@ def insert_order_item(order_id, item):
     )
     con.commit()
 
-# ------------------- MAIN PROGRAM ------------------------
+# main program
 
 cart = []
 
@@ -98,7 +98,7 @@ while True:
     if cont == "n":
         break
 
-# ------------------- CUSTOMER DETAILS --------------------
+#  Customer details
 
 cust_name = input("Enter your name: ")
 address = input("Enter your address: ")
@@ -123,7 +123,7 @@ order_id = insert_order(cust_id, total_items_cost, delivery, final_amount)
 for item in cart:
     insert_order_item(order_id, item)
 
-# ---------------------- BILL ------------------------------
+# Bill
 
 print("\n------------------- FINAL BILL ----------------------")
 print(f"Customer: {cust_name}")
