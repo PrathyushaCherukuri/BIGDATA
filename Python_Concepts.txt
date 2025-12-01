@@ -1,0 +1,14 @@
+Logging : 
+tracking of events that happens when some software runs.
+
+Python logging levels:
+Debug : These are used to give detailed information, 
+       typically of interest only when diagnosing problems.
+info : These are used to confirm that things are working as expected.
+Warning : These are used an indication that something unexpected 
+       happened or is indicative of same problem in the near future.
+Error : This tells that due to a more serious problem, the software
+       has not able to perfrom some function.
+Critical : This tells serious error, indicating that the program 
+        itself may be unable to continue running.
+
