@@ -1,0 +1,74 @@
+Hadoop - open distributed computing framework.
+Hadoop has four components mainly:
+    - HDFS (Hadoop Distributed File System)
+    - YARN (Yet Another Resource Negotiator)
+    - MapReduce (Processing Framework)
+HDFS:
+======
+It is a hadoop storage layer and stores data across many machines in a 
+fault- tolerant way.
+-Namenode : 
+    Master daemon
+    Manages metadata: file names, blocks and block locations
+    Keeps filesystem hierarchy
+-Datanodes :
+    Worker daemon
+    Store actual blocks of data
+-Secondary Namenode (Not a backup Namenode)
+    Periodically merges Filesystem image + edit logs
+    Helps reduce Namenode restart time
+
+How HDFS stores data
+    Files are split into blocks (default: 128 MB)
+    Each block is replicated across nodes. (Default replication factor : 3)
+    If one node fails, still data will be available.
+
+YARN:
+=====
+YARN is hadoop's cluster management + job scheduling layer
+
+Components:
+Resource Manager:
+    Global Master.
+    Allocates resources to applications.
+Node Manager:
+    Runs on each node.
+    manages containers (execution environments).
+Application Manager:
+    Manages a single job
+    requests resources from resource manager.
+    works with node managers to run tasks.
+
+MapReduce:
+===========
+MapReduce is Hadoops native batch processing model.
+How it works:
+- Input data is split into blocks.
+- Map phase
+    worker nodes process blocks
+    Emit key-value pairs
+-Shuffle & Sort
+    Keys are sorted & grouped
+    Data transferred across network
+-Reduce phase
+    Aggregates or processes grouped data
+-Output written back to HDFS.
+
+Why hadoop works well for bigdata
+- Highly scalable
+- Fault tolerant
+- Cost effective
+- Flexible
+
+
+ls - list files
+cd - change directory
+mkdir - create directory
+pwd - prints current active directory
+rmdir - deletes directory
+cp - Copy
+rm - delete files in directory
+mv - rename the files
+touch - creates empty file
+cat - to see the content of file
+echo - used to print something on to file (echo "hello">>a.txt)
