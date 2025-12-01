@@ -1,0 +1,58 @@
+SQL: Structured Query Language
+
+Normalisation 
+De-Normalisation
+ER-diagram (Relationships)
+Joins
+    * Inner Join
+    * Outer/Full outer Join
+    * Left Outer Join
+    * Right Outer Join
+    * Self Join
+    * Cross Join
+    * Anti-left Join
+    * Anti-right Join
+Sub-Query
+Co-related sub-Query
+Window Functions
+    -Aggregate Functions
+        * SUM()
+        * AVG()
+        * COUNT()
+        * MIN()
+        * MAX()
+    -Ranking Window Functions
+        * RANK()
+        * DENSE_RANK()
+        * ROW_NUMBER()
+        * PERCENT_RANK()
+    -Value Window Functions
+        * LAG()
+        * LEAD()
+        * FIRST_VALUE()
+        * LAST_VALUE()
+        * NTH_VALUE()
+CTE - Common table Expression
+Indexes
+    - Clustered Indexes
+    - Non-Clustered Indexes
+SQL Merge Statement
+UNION : Does not includes duplicates
+UNION ALL : includes duplicates
+Views : Do not stores data, runs original query each time
+Materialized Views : Stores aggregated result physically.
+
+
+Questions:
+
+How many tables are created in M to M? why?
+3 tables
+A many-to-many relationship requires 3 tables: the two entity tables and one junction table.
+This is because relational databases only support one-to-many relationships directly, so the junction table is needed to connect them.
+Ex: Multiple employees working on multiple projects 
+
+
+Can inner query execute independently?
+Sub-query  – Yes
+Co-related query – No
+
