@@ -6,3 +6,7 @@
 2025-11-28 20:57:34,726 | INFO | ingestion | Extracting data...
 2025-11-28 20:57:34,726 | ERROR | ingestion | Failed to download file
 2025-11-28 20:57:34,734 | INFO | ingestion | Pipeline completed
+2025-12-01 14:42:15,706 | INFO | ingestion | Pipeline started
+2025-12-01 14:42:15,718 | INFO | ingestion | Extracting data...
+2025-12-01 14:42:15,724 | ERROR | ingestion | Failed to download file
+2025-12-01 14:42:15,762 | INFO | ingestion | Pipeline completed
