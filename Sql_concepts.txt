@@ -37,6 +37,18 @@ Indexes
     - Clustered Indexes
     - Non-Clustered Indexes
 SQL Merge Statement
+
+Incremental Load : Copy data from db to datalake from the last load. 
+Full Load : Copy all data from db to datalake
+
+SCD - Slowly Changing Dimensions
+    SCD Type 0: Retain orginal (no changes allowed once created)
+    SCD Type 1: Overwrite (no history kept, correcting errors)
+    SCD Type 2: New row is inserted for every change (history is preserved)
+    SCD Type 3: Add new attribute (Partial history, Store limited history by adding extra columns)
+    SCD Type 4: History table(Changes recorded in separate history table)
+
+
 UNION : Does not includes duplicates
 UNION ALL : includes duplicates
 Views : Do not stores data, runs original query each time
