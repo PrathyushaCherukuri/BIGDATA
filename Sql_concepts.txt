@@ -66,8 +66,110 @@ A many-to-many relationship requires 3 tables: the two entity tables and one jun
 This is because relational databases only support one-to-many relationships directly, so the junction table is needed to connect them.
 Ex: Multiple employees working on multiple projects 
 
-
 Can inner query execute independently?
 Sub-query  – Yes
 Co-related query – No
 
+SQL 
+1.Types of commands and their examples.
+    DDL : CREATE, ALTER, DROP(delete table), TRUNCATE (Keeps structure, delete data)
+    DML : INSERT, UPDATE, DELETE, MERGE
+    DQL : SELECT
+    DCL : GRANT, REVOKE
+    TCL : COMMIT, ROLLBACK, SAVEPOINT, SET TRANSACTION
+
+2.What is Normalization and denormalization? 
+Normalisation: Involves dividing larger tables into smaller, related tables 
+and defines the relationship between them.
+    - Reduce data redundancy (duplicate data)
+    - Improve data integrity
+
+De-Normalisation: It involves combining tables or adding redudant data to
+improve read performance.
+    - Reduce number of Joins
+    - Speed up heavy operations
+    - Used in dataware houses or reporting system.
+
+3.Explain 1NF, 2NF, 3NF.
+1NF : Ensures each column has atomic value; no repeating groups.
+2NF : Ensure all non-key columns are fully dependent on the primary key.
+3NF : Ensure no transitive dependency (non-key column depends on another non-key column)
+BCNF : Resolve certain anomalies not handled by 3NF.
+
+4.Share use case where you had to do denormalization in database..
+The business wanted a daily sales dashboard that showed metrics like:
+    - Total sales per customer
+    - Most purchased products
+    - Total revenue per category
+With normalization, generating these reports required multiple joins
+across Orders, Order_Items, Products, and Customers. As the dataset 
+grew to millions of orders, these queries became slow, especially for 
+real-time dashboards.
+
+5.What is primary key and foreign key?
+Primary key : 
+    - A column in a table that uniquely identifies each row.
+    - It contain NULL values and must be unique.
+Foreign key :
+    - A foreign key is a column (or a set of columns) in one table that
+ refers to the primary key in another table.
+    - It is used to establish a relationship between two tables.
+
+ 6.what is alternate, candidate key & Business Key? 
+Candidate Key :
+    - A candidate key is a column (or a set of columns) in a table that
+can uniquely identify each row.
+    - A table can have one or more candidate keys.
+    - Among candidate keys, one is chosen as the primary key. The rest are alternate keys.
+Alternate Key :
+    - An alternate key is a candidate key that was not chosen as the 
+primary key.
+    - It can still be used to uniquely identify rows, but it is not the main primary key.
+Business Key :
+    - A business key (sometimes called a natural key) is a key that has real-world meaning outside the database.
+    - It is often used by the business to identify entities, not just for technical uniqueness.
+Example:
+In a Customers table: Email or SocialSecurityNumber could be a business key.
+These have meaning in real life (email identifies the person, SSN identifies a citizen).
+ 
+7.What are window functions?
+A window function performs a calculation across a set of rows related to
+the current row without collapsing the result into a single output row.
+
+8.Explain Ranking Functions? Given a small table , write the output.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+9.	Types of Joins? With example and usecase. All the number of records return and exact records.
+10.	Use case when self join is required.
+11.	What is subquery?
+12.	What is corelated subquery?
+13.	What is CTE? 
+14.	What is derived table?
+15.	Find third highest employee based on salary?
+16.	Find third highest employee based on salary  per department?
+17.	How to find duplicate values in a single column?
+18.	How to find duplicate values in a multiple column?
+19.	What are ACID properties?
+20.	Diff between union and union all
+21.	Diff between primary key and unique key
+22.	Diff between truncate and delete
+23.	Diff between having and where
+24.	SQL query execution order.
+25.	What are indexes? Types of Indexes and their differences.
+26.	Ways to optimize sql query?
