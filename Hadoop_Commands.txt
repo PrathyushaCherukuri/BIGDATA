@@ -72,3 +72,45 @@ mv - rename the files
 touch - creates empty file
 cat - to see the content of file
 echo - used to print something on to file (echo "hello">>a.txt)
+
+Copy From local
+    => hadoop fs -copyFromLocal 18nov/Prathyusha/a.txt UKUS18nov/Prathyusha/
+Copy To local
+    => hadoop fs -copyToLocal UKUS18nov/Prathyusha/a.txt 18nov/Prathyusha/aa.txt
+View contents of HDFS folder:
+    => hadoop fs -ls UKUS18nov/Prathyusha
+Show the content of a file
+    => hadoop fs -cat UKUS18nov/Prathyusha/a.txt
+Tail last 1 KB
+    => hadoop fs -tail UKUS18nov/Prathyusha/a.txt
+Show disk usage of folder
+    => hadoop fs -du UKUS18nov/Prathyusha
+    => hadoop fs -du -s UKUS18nov/Prathyusha  (Summary Only)
+    => hadoop fs -du -h UKUS18nov/Prathyusha  (human readable)
+Create an empty file in HDFS
+    => hadoop fs -touchz UKUS18nov/Prathyusha/emptyfile.txt
+Change replication factor
+    => hadoop fs -setrep 4 UKUS18nov/Prathyusha/a.txt
+Check file count
+    => hadoop fs -count UKUS18nov/Prathyusha
+    => hadoop fs -count -v UKUS18nov/Prathyusha (verbose)
+Create a directory inside folder
+    => hadoop fs -mkdir UKUS18nov/Prathyusha/testdir
+Remove directory
+    => hadoop fs -rmdir UKUS18nov/Prathyusha/testdir
+Copy file inside HDFS
+    => hadoop fs -cp UKUS18nov/Prathyusha/a.txt UKUS18nov/Prathyusha/a_copy.txt
+Move file inside HDFS**
+    => hadoop fs -mv UKUS18nov/Prathyusha/a_copy.txt UKUS18nov/Prathyusha/a_moved.txt
+Append multiple local files to HDFS file
+    => hadoop fs -appendToFile 18nov/Prathyusha/a.txt 18nov/Prathyusha/aa.txt UKUS18nov/Prathyusha/merged_hdfs.txt
+Merge HDFS files into 1 local file
+    => hadoop fs -getmerge UKUS18nov/Prathyusha merged_local.txt
+    Check locally:
+     ls  &  cat
+Change permissions
+    => hadoop fs -chmod 771 UKUS18nov/Prathyusha/a.txt
+Change group
+    => hadoop fs -chgrp ec2-user UKUS18nov/Prathyusha/a.txt
+Change owner/group
+    => hadoop fs -chown ec2-user:ec2-user UKUS18nov/Prathyusha/a.txt
