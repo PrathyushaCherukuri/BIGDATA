@@ -73,6 +73,7 @@ touch - creates empty file
 cat - to see the content of file
 echo - used to print something on to file (echo "hello">>a.txt)
 
+
 Copy From local
     => hadoop fs -copyFromLocal 18nov/Prathyusha/a.txt UKUS18nov/Prathyusha/
 Copy To local
