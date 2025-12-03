@@ -137,39 +137,207 @@ A window function performs a calculation across a set of rows related to
 the current row without collapsing the result into a single output row.
 
 8.Explain Ranking Functions? Given a small table , write the output.
+ROW_NUMBER() : series of numbers (1,2,3,4,....)
+RANK() : Assigns a rank to rows with gaps for ties. (1,2,2,4,4,6,..)
+DENSE_RANK() : Assigns a rank to rows without gaps for ties. (1,2,2,3,3,4...)
+Ex:
+SELECT Employee, Amount,
+       ROW_NUMBER() OVER (ORDER BY Amount DESC) AS RowNum
+FROM Sales;
+
+9.Types of Joins? With example and usecase. All the number of records return and exact records.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-9.	Types of Joins? With example and usecase. All the number of records return and exact records.
 10.	Use case when self join is required.
+
+Self-joins are used in:
+    -> Organizational charts
+    -> Department hierarchies
+    -> Reporting manager structures
+    -> Folder–subfolder structures
+    -> Category–subcategory in e-commerce
+Manager–Employee Relationship:
+Background:
+
+In many companies, manager and employees are stored in the same table 
+because managers are also employees.
+So the table looks like:
+
+Table: Employees
+
+EmpID | EmpName | ManagerID
+--------------------------------
+1     | John    | 3
+2     | Mary    | 3
+3     | Sam     | NULL
+4     | Rita    | 1
+
+
+ManagerID refers to another EmpID in the same table.
+This creates a hierarchical relationship (employee → manager).
+
+⭐ Problem
+------------
+The HR team wants a report that shows:
+Each employee
+Their corresponding manager’s name
+But the manager’s name is not directly stored—only the manager ID is.
+
+⭐ Why Self Join is Needed
+----------------------------
+Both employees and managers are in the same table.
+To connect them, the table must be joined to itself:
+One copy represents employees
+The other represents managers
+
+Solution (Self Join)
+======================
+SELECT 
+    e.EmpName AS Employee,
+    m.EmpName AS Manager
+FROM Employees e
+LEFT JOIN Employees m
+    ON e.ManagerID = m.EmpID;
+
+Employee | Manager
+-----------------------
+John     | Sam
+Mary     | Sam
+Sam      | NULL
+Rita     | John
+
+Employees (e)    → acts as child
+Employees (m)    → acts as parent/manager
+
 11.	What is subquery?
+Query inside another query is said to be subquery.
+The outer query uses the result returned by the subquery.
+
 12.	What is corelated subquery?
+A correlated subquery is a subquery that depends on the outer query 
+for its values.
+It runs once for every row of the outer query.
+
 13.	What is CTE? 
+A CTE is a temporary, named result set that you create using the WITH
+clause, and you can use it just like a table within your main SQL query.
+It is not stored in the database,it's only available for the duration of that query.
+
 14.	What is derived table?
+A derived table is a subquery used in the FROM clause, and it acts like
+a temporary table only for that query.
+Ex : SELECT EmpName, Salary
+        FROM (
+            SELECT EmpName, Salary
+            FROM Employees
+            WHERE Salary > 5000
+    ) AS HighSalaryEmployees;
+
 15.	Find third highest employee based on salary?
+USING LIMIT & OFFSET
+---------------------
+SELECT *
+FROM employees
+ORDER BY salary DESC
+LIMIT 1 OFFSET 2;   -- 3rd highest
+
+USING DENSE_RANK()
+-------------------
+SELECT *
+FROM (
+    SELECT *, DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+    FROM employees
+) t
+WHERE rnk = 3;
+
 16.	Find third highest employee based on salary  per department?
+
+SELECT department_id, employee_name, salary
+FROM (
+    SELECT 
+        department_id,
+        employee_name,
+        salary,
+        DENSE_RANK() OVER (
+            PARTITION BY department_id 
+            ORDER BY salary DESC
+        ) AS rnk
+    FROM employees
+) t
+WHERE rnk = 3;
+
 17.	How to find duplicate values in a single column?
+
+SELECT column_name, COUNT(*) AS count
+FROM table_name
+GROUP BY column_name
+HAVING COUNT(*) > 1;
+
 18.	How to find duplicate values in a multiple column?
+
+SELECT *
+FROM table_name
+WHERE column_name IN (
+    SELECT column_name
+    FROM table_name
+    GROUP BY column_name
+    HAVING COUNT(*) > 1
+);
+
 19.	What are ACID properties?
+A - Atomicity : All operations succeed or none.
+C - Consistency : Database remains in a valid state.
+I - Isolation : Preventing transactions from interfering with each other.
+D - Durability : Comitted transactions must be permanent.
+
 20.	Diff between union and union all
+UNION : Does not includes duplicates
+UNION ALL : includes duplicates
+
 21.	Diff between primary key and unique key
-22.	Diff between truncate and delete
+Primary Key : Unique + NOT NULL, only one per table.
+Unique Key : Unique, can have multiple per table, allows NULL.
+
+22.	Diff between delete, truncate and drop?
+DELETE  : Row-wise deletion, can rollback, triggers fire.
+TRUNCATE : Removes all rows, faster, cannot rollback, no triggers
+DROP : Removes table structure completely.
+
 23.	Diff between having and where
+WHERE : Filters rows before aggregation
+HAVING : Filters rows after aggregation
+
 24.	SQL query execution order.
+FROM → Tables are identified and joined if multiple tables are involved.
+WHERE → Filters rows before grouping.
+GROUP BY → Groups rows based on specified columns.
+HAVING → Filters groups after aggregation.
+SELECT → Selects the columns or expressions to return.
+DISTINCT → Removes duplicate rows from the result set (if specified).
+ORDER BY → Sorts the final result.
+LIMIT / OFFSET → Returns a subset of rows (if specified).
+
 25.	What are indexes? Types of Indexes and their differences.
+An index is a database object that improves the speed of data retrieval from a table
+
+| Type                    | Description                                                                                    | Example Usage                             |
+| ----------------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| **Primary Key Index**   | Automatically created on the primary key; ensures **uniqueness**.                              | `id` in `employees` table                 |
+| **Unique Index**        | Ensures that indexed column(s) have **unique values**.                                         | `email` in `users` table                  |
+| **Clustered Index**     | Stores the **actual table rows in sorted order** according to the index. Only **1 per table**. | `id` column in SQL Server or MySQL InnoDB |
+| **Non-Clustered Index** | Stores **pointers to table rows**; can have **multiple per table**.                            | `last_name` for faster searches           |
+| **Composite Index**     | Index on **multiple columns**; useful for queries involving multiple columns.                  | `(first_name, last_name)`                 |
+| **Full-Text Index**     | Optimized for **text searching** (LIKE, CONTAINS) in large text columns.                       | `description` in `products` table         |
+| **Bitmap Index**        | Uses **bits** to represent values; good for **low-cardinality columns** like gender or status. | `gender` in HR system                     |
+| **Hash Index**          | Uses a **hash function** for fast equality searches; often in memory-optimized databases.      | Key-value lookups                         |
+
+
 26.	Ways to optimize sql query?
+- Using Proper indexing
+- Avoid SELECT *
+- Using WHERE clause effectiently
+- Using joins instead of sub-queries
+- Limit rows
+- Avoid distinct if not needed
+- Optimize ORDER BY and GROUP BY
+- Use Query Execution Plan
