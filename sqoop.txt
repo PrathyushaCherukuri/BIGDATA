@@ -1,0 +1,85 @@
+Sqoop: Data Ingestion
+Purpose: Move data between DB ↔ HDFS/Hive.
+DB objects: schema, tables.
+
+1. List Tables in PostgreSQL:
+--------------------------
+sqoop list-tables \
+--connect jdbc:postgresql://18.134.163.221:5432/testdb \
+--username admin \
+--password admin123
+
+
+2. DB → HDFS Ingestion:
+--------------------
+Full table import
+
+sqoop import \
+--connect jdbc:postgresql://18.134.163.221:5432/testdb \
+--username admin \
+--password admin123 \
+--table employee \
+--m 1 \
+--target-dir UKUS18nov/Prathyusha/employee
+
+3. HDFS → DB Ingestion
+-----------------------
+Create empty table in DB first:
+
+create table pemployee as select * from employee where 1>2;
+
+Export HDFS data to DB table:
+-----------------------------
+sqoop export \
+--connect jdbc:postgresql://18.134.163.221:5432/testdb \
+--username admin \
+--password admin123 \
+--table pemployee \
+--m 1 \
+--export-dir UKUS18nov/Prathyusha/employee/
+
+
+Full Load vs Incremental Load
+===============================
+| Load Type        | Description                        | Example SQL                                                                                                                                                                                                                      |
+| ---------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Full Load        | All data to HDFS/Data Lake or Hive | `SELECT * FROM tablename;`  
+                                                                                                                                                                                           |
+| Incremental Load | Only new or changed data           | **Case 1: Insert only** <br> `SELECT * FROM tablename WHERE id > lastIngestedID;`  `SELECT * FROM tablename WHERE id > (SELECT MAX(id) FROM hivetablename);`                                                                 |
+|                  |                                    | **Case 2: Insert, Update, Delete** <br> *Requires timestamp column* <br> `SELECT * FROM tablename WHERE timestamp > lastTimestamp;` <br> `SELECT * FROM tablename WHERE timestamp > (SELECT MAX(timestamp) FROM hivetablename);` |
+
+Incremental Load – Case 1 (Append Mode)
+=======================================
+
+Import new rows where employeeid > last imported:
+-------------------------------------------------
+sqoop import \
+--connect jdbc:postgresql://18.134.163.221:5432/testdb \
+--username admin \
+--password admin123 \
+--table employee \
+--m 1 \
+--target-dir UKUS18nov/Prathyusha/employee1 \
+--incremental append \
+--check-column employeeid \
+--last-value 0
+
+
+Next incremental import (after last imported ID = 5):
+-----------------------------------------------------
+
+sqoop import \
+--connect jdbc:postgresql://18.134.163.221:5432/testdb \
+--username admin \
+--password admin123 \
+--table employee \
+--m 1 \
+--target-dir UKUS18nov/Prathyusha/employee1 \
+--incremental append \
+--check-column employeeid \
+--last-value 5
+
+
+blog to refer:
+==============
+https://medium.com/@nitingupta.bciit/apache-sqoop-incremental-import-with-sqoop-job-949b60e1101a
