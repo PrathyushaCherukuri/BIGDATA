@@ -115,3 +115,19 @@ Change group
     => hadoop fs -chgrp ec2-user UKUS18nov/Prathyusha/a.txt
 Change owner/group
     => hadoop fs -chown ec2-user:ec2-user UKUS18nov/Prathyusha/a.txt
+
+
+chmod : giving permission
+
+: - file , d directory
+rw- : owner
+r-- : group
+r-- : others
+.sh : bash scripting
+read -4, write-2 , execute -1
+rwxrwxrwx : full permission
+rwxrwxr-- :
+
+number
+
+chmod 766 a.txt
