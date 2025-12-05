@@ -1,0 +1,267 @@
+Hive : dataware house built on top of hadoop.
+-> It allows to query and managed the stored on HDFS.
+
+Hive supports two types of tables :
+
+Managed Tables(Internal tables):
+================================
+-> Hive manages both metadata and data
+-> When you drop the table, Hive deletes both metadata and the actual data from HDFS.
+-> Hive stores data in /user/hive/warehouse/ by default.
+
+External Table:
+===============
+-> Hive only manages metadata, but the data resides externally (outside Hive’s warehouse directory).
+-> Dropping the table only deletes metadata, data remains intact.
+-> Useful when data is shared with other tools or already exists in HDFS.
+
+Partitioning:
+=============
+-> Partitioning is a way to divide a large table into smaller, manageable pieces based on the value of a column (e.g., date, region).
+-> Helps improve query performance because queries can scan only relevant partitions.
+-> Each partition is stored as a subdirectory in HDFS.
+Ex:
+CREATE TABLE sales (
+    product STRING,
+    amount FLOAT
+)
+PARTITIONED BY (year INT, month INT);
+
+Bucketing:
+=========
+-> Bucketing further divides data within a partition (or table) into fixed number of files (buckets) based on a hash function of a column.
+-> Useful for more fine-grained data organization and efficient joins.
+-> Hive distributes rows into n buckets using the hash of the bucketed column.
+
+Ex:
+CREATE TABLE users (
+    id INT,
+    name STRING,
+    age INT
+)
+CLUSTERED BY (id) INTO 4 BUCKETS;
+
+
+
+
+STEP 1 — Create Your Directory in HDFS
+======================================
+Run this on EC2 terminal:
+    hdfs dfs -mkdir -p /user/ec2-user/tmp/UKUS18novtmp/Prathyusha/std/
+Verify:
+    hdfs dfs -ls /user/ec2-user/tmp/UKUS18novtmp/Prathyusha/
+
+STEP 2 — Upload Your CSV From EC2 → HDFS
+=========================================
+Assuming your CSV file is /home/ec2-user/std.csv
+    hdfs dfs -put /home/ec2-user/std.csv /user/ec2-user/tmp/UKUS18novtmp/Prathyusha/std/
+Verify:
+    hdfs dfs -ls /user/ec2-user/tmp/UKUS18novtmp/Prathyusha/std/
+
+STEP 3 — Start Hive
+====================
+run command 
+hive
+
+create database if not exists ukus18;
+use ukus18;
+
+STEP 4 — Create Internal Table
+==============================
+
+create table std(
+  stdid int,
+  stdName string,
+  age int
+)
+row format delimited
+fields terminated by ','
+stored as textfile;
+
+STEP 5 — Load Data Into Internal Table
+======================================
+
+load data inpath '/user/ec2-user/tmp/UKUS18novtmp/Prathyusha/std/std.csv'
+into table std;
+
+you see an error 
+Ah! The error you’re seeing is very common with Hive internal tables:
+Access denied: Unable to move source ... to Hive warehouse
+
+run in ec2 terminal not in hive prompt
+hdfs dfs -chmod -R 777 /user/ec2-user/tmp/UKUS18novtmp/Prathyusha/std/
+
+then reload data.
+
+query the data:
+--------------
+Select * from std;
+
+STEP 6 — Create External Table
+==============================
+
+create external table if not exists std_ext(
+  stdid int,
+  stdName string,
+  age int
+)
+row format delimited
+fields terminated by ','
+stored as textfile
+location '/user/ec2-user/tmp/UKUS18novtmp/Prathyusha/std/'
+tblproperties ("skip.header.line.count"="0");  --> if there is an header for your then it is 1
+
+Query data
+----------
+select * from std_ext;
+
+
+Create database ukus18.
+Create HDFS directory for CSV: /user/ec2-user/tmp/UKUS18novtmp/Prathyusha/std/.
+Upload CSV to HDFS.
+Create internal table in Hive warehouse, query it.
+Create external table pointing to HDFS, query it.
+Load CSV into internal table, query it.
+Use chmod if permissions prevent Hive from reading CSV.
+
+
+PARTITIONING USING YOUR FILE — Prathyusha/std.csv
+=================================================
+
+USE ukus18;
+
+CREATE EXTERNAL TABLE ukus18.stdET (
+  stdid INT,
+  stdName STRING,
+  age INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/user/ec2-user/tmp/UKUS18novtmp/Prathyusha/std/'
+TBLPROPERTIES ("skip.header.line.count"="0");
+
+
+STEP 2 — Create Partitioned External Table
+-------------------------------------------
+CREATE EXTERNAL TABLE ukus18.stdETP (
+  stdid INT,
+  stdName STRING
+)
+PARTITIONED BY (age INT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+⚠ Partition columns MUST NOT be placed in main table columns.
+
+STEP 3 — Insert Data Into Partitioned Table
+--------------------------------------------
+INSERT OVERWRITE TABLE ukus18.stdETP
+PARTITION (age)
+SELECT stdid, stdName, age
+FROM ukus18.stdET;
+
+This will create partition folders like:
+
+age=10/
+age=15/
+age=20/
+
+STEP 4 — Check Partitions in HDFS
+----------------------------------
+
+hadoop fs -ls /warehouse/tablespace/external/hive/ukus18.db/stdETP
+
+you shouls see :
+age=10/
+age=12/
+age=14/
+...
+
+STEP 5 — View a Partition File
+-------------------------------
+hadoop fs -cat /warehouse/tablespace/external/hive/ukus18.db/stdETP/age=10/000000_0
+
+STEP 6 — Query Data From Partitioned Table
+------------------------------------------
+SELECT * FROM ukus18.stdETP;
+
+
+
+--partition (for reference)
+
+create managed table or external table without partitoning
+create external table ukus18.empET (empid Int, empName String,age Int) row format delimited fields terminated by ',' stored as textfile location '/user/ec2-user/tmp/UKUS18novtmp/rupali/emp/emp.csv' tblproperties ("skip.header.line.count"="0");
+
+create external table ukus18.empETP (empid Int, empName String) partitioned by (age Int) row format delimited fields terminated by ',' stored as textfile
+
+insert overwrite table ukus18.empETP select empid,empName,age from ukus18.empET
+
+hadoop fs -ls /warehouse/tablespace/external/hive/ukus18.db/empETP
+
+hadoop fs -cat /warehouse/tablespace/external/hive/ukus18.db/empETP/age=10/000000_0
+
+
+
+bucketing:
+==========
+
+Step 1 — Create external table on the CSV
+-----------------------------------------
+CREATE EXTERNAL TABLE ukus18.stdET (
+  stdid INT,
+  stdName STRING,
+  age INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/user/ec2-user/tmp/UKUS18novtmp/Prathyusha/std/'
+TBLPROPERTIES ("skip.header.line.count"="0");
+
+Step 2 — Create the bucketed + partitioned table
+------------------------------------------------
+We want:
+-> Partitioned by age
+-> Bucketed by stdid into 2 buckets
+
+CREATE EXTERNAL TABLE ukus18.stdETB (
+  stdid INT,
+  stdName STRING
+)
+PARTITIONED BY (age INT)
+CLUSTERED BY (stdid) INTO 2 BUCKETS
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+Step 3 — Enable bucketing in Hive session
+-----------------------------------------
+SET hive.enforce.bucketing=true;
+SET hive.enforce.sorting=true;   -- optional but recommended for sorted buckets
+
+Step 4 — Insert data into the bucketed table
+--------------------------------------------
+INSERT OVERWRITE TABLE ukus18.stdETB
+SELECT stdid, stdName, age
+FROM ukus18.stdET;
+
+Step 5 — Verify bucket files on HDFS
+------------------------------------
+hadoop fs -ls /warehouse/tablespace/external/hive/ukus18.db/stdETB
+
+
+Step 6 — Optional Hive verification
+-----------------------------------
+
+SHOW PARTITIONS ukus18.stdETB;
+DESCRIBE FORMATTED ukus18.stdETB;
+SELECT * FROM ukus18.stdETB LIMIT 10;
+
+
+hive vs impala
+MapReduce vs MPP
+
+
+low latency, shared nothing architecture
