@@ -42,8 +42,6 @@ CREATE TABLE users (
 CLUSTERED BY (id) INTO 4 BUCKETS;
 
 
-
-
 STEP 1 — Create Your Directory in HDFS
 ======================================
 Run this on EC2 terminal:
