@@ -262,4 +262,5 @@ hive vs impala
 MapReduce vs MPP
 
 
-low latency, shared nothing architecture
+low latency, shared-nothing architecture
+
