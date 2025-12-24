@@ -691,6 +691,148 @@ to fix data skew. This is typically done when processing large datasets, after r
 numbers of partitions, or before expensive operations like joins and aggregations.
 
 23.	What is a driver?  Example of methods that are executed on driver?
+** Driver plans and schedules; executors execute.
+
+The driver is the central coordinator of a Spark application. It creates the SparkContext, 
+builds and optimizes the execution plan, communicates with the cluster manager, schedules jobs
+and tasks on executors, and collects results. Methods such as collect(), count(), show(), 
+broadcast creation, accumulator creation, and query planning are executed on the driver.
+
+24.	What is an executor? Example of methods that are executed on executor?
+An executor is a process running on a worker node that executes tasks assigned by the driver. 
+Executors perform the actual data processing, cache data in memory, and send results back to 
+the driver. Each Spark application has its own set of executors.
+
+25.	When would you use a broadcast join? 
+I use a broadcast join when one table is small and the other is large. Spark broadcasts the 
+small table to all executors so the join happens locally on each executor, avoiding shuffle 
+and significantly improving performance.
+
+26.	What is a broadcast variable? How does it work and gives performance benefit.
+A broadcast variable in Spark is a read-only variable cached on each executor, allowing 
+efficient sharing of small data across tasks, reducing network I/O, avoiding shuffles, and 
+significantly improving performance—especially in joins.
+
+27.	Cache v/s persist
+cache() is a shortcut for persisting data in memory only, while persist() allows explicit 
+control over storage levels such as memory, disk, or serialization. Persist provides more 
+flexibility and reliability, especially for large datasets.
+
+28.	What’s a shuffle?
+A shuffle is the process where Spark redistributes data across partitions and executors so that
+records with the same key end up in the same partition.
+
+29.	What is Spill? How can we use this to increase performance.
+Spill in Spark occurs when in-memory data exceeds available memory, causing Spark to write 
+intermediate data to disk. While disk I/O is slower, controlled spilling prevents out-of-memory
+errors and job failures. By reducing shuffle size, tuning memory, and using appropriate 
+persistence levels, spill can be minimized and overall performance improved.
+
+30.	Mention different ways for Spark performance tuning. Share use case, how you identified the problem, what is the problem, what is the solution.
+Spark performance tuning involves minimizing shuffles, optimizing partitioning, caching reused 
+datasets, handling data skew, tuning memory and executors, and using efficient file formats. 
+Issues are typically identified using Spark UI metrics like shuffle size, spill, task duration,
+ and GC time. 
+Solutions focus on reducing data movement, improving parallelism, and efficient
+resource utilization.
+
+31.	Challenges faced in spark projects you worked on?
+In my Spark projects, I faced challenges like data skew, excessive shuffles, memory spills, 
+slow joins, repeated recomputation, and inefficient file formats. I identified these issues 
+using Spark UI metrics such as task duration, shuffle size, spill metrics, and executor 
+utilization. Solutions included broadcast joins, caching, proper partitioning, memory tuning, 
+handling skew, and migrating to columnar formats like Parquet, resulting in significant 
+performance and stability improvements.
+
+32.	What is OOM error ? what are the possible reasons ?
+An OOM error in Spark occurs when the driver or executors run out of memory while processing 
+data. Common causes include large shuffles, data skew, excessive caching, large broadcast 
+variables, insufficient memory allocation, inefficient serialization, and collecting large 
+datasets to the driver. OOM issues are typically identified via Spark UI and logs, and resolved
+by reducing shuffle size, improving partitioning, tuning memory, and optimizing caching 
+strategies.
+
+33.	Difference between data partition and table partition?
+A data partition in Spark is a runtime concept used to divide data for parallel processing, 
+while a table partition is a storage-level concept that physically organizes data based on 
+column values to reduce data scanning. Data partitions improve parallelism, whereas table 
+partitions improve query efficiency through pruning.
+
+34.	If both the dataset are large then how do you optimize the code?
+When both sides are large, you can’t rely on broadcast; focus on shuffle efficiency and data reduction:
+Filter early, select only required columns (cut data before shuffle).
+Ensure join keys are well-distributed; handle skew.
+Use bucketing to reduce shuffle across runs.
+Avoid UDFs in join/filter paths; use Spark SQL functions.
+Use efficient file formats + compression; avoid tiny files; compact outputs.
+
+35.	What is a logical plan vs a physical plan? 
+Logical Plan – what needs to be done
+Physical Plan – how Spark will do it
+
+36.	What is accumulator?
+An accumulator is a shared, write-only variable that Spark executors use to aggregate values 
+(like counters or sums) and send the final result back to the driver.
+
+37.	Spark Streaming vs Structured Streaming 
+Spark Streaming is the older DStream-based streaming framework that processes data as 
+micro-batched RDDs, while Structured Streaming is a higher-level API built on Spark SQL that 
+treats streaming data as an unbounded table, offering better optimization, fault tolerance, 
+event-time processing, and exactly-once semantics.
+
+38.	What is Dynamic Partition Pruning? 
+Dynamic Partition Pruning is a Spark SQL optimization that prunes table partitions at runtime 
+using values generated during query execution, typically from the build side of a join. 
+It significantly reduces I/O and improves performance for joins on large partitioned tables 
+when filter values are not known at query compile time.
+
+39.	Advantages n disadvantages of big data File formats parquet, avro, csv, json.
+Parquet is a columnar format optimized for analytical queries with high compression and 
+predicate pushdown. Avro is a row-based, schema-driven format ideal for streaming and schema 
+evolution. CSV and JSON are text-based and human-readable but inefficient at scale due to 
+large size, lack of schema enforcement, and poor performance.
+
+40.	what are compression formats and its specialities
+Compression formats reduce storage and I/O by encoding data efficiently. Snappy is preferred 
+in Spark for fast analytics, GZIP offers high compression for archival, ZSTD provides a balance
+of speed and compression, and formats like LZ4 and LZO are used where low latency or 
+splittability is important. Choosing the right compression is a trade-off between CPU cost, 
+speed, and storage savings.
+
+41.	Spark optimization techniques. Share use case
+Spark optimization involves reducing shuffles, choosing efficient join strategies, 
+tuning partitions and memory, handling data skew, caching reused datasets, using columnar 
+file formats, and leveraging Spark SQL optimizations like AQE and predicate pushdown. 
+Problems are identified using Spark UI metrics such as shuffle size, spill, task duration, and 
+executor utilization, and solutions focus on minimizing data movement and maximizing parallelism.
+
+42.	How does Spark memory management works?
+Spark uses a unified memory management model where executor heap memory is dynamically shared 
+between execution and storage. Execution memory has priority and can evict cached data when 
+needed. When memory is insufficient, Spark spills data to disk to avoid failures. Proper tuning
+of memory fractions, partitions, caching strategy, and memory overhead is critical to avoid 
+spills and OOM errors.
+
+43.	How many stages and task are created.
+✅ Stages depend on shuffles
+✅ Tasks depend on partitions
+
+In Spark, stages are created based on shuffle boundaries—each wide transformation introduces a 
+new stage. Tasks are created based on data partitions, with one task per partition per stage. 
+Therefore, the number of stages depends on the number of shuffles, and the number of tasks depends 
+on the number of partitions.
+
+44.	How are executors created in spark. What are the methods to identify executor size.
+Executors are created by the cluster manager on driver request, and the best executor size is 
+foundby balancing cores, memory, and workload behaviour—not by maxing out resources.
+
+Executors in Spark are JVM processes launched by the cluster manager when requested by the 
+driver. Executor size is determined by configuring the number of executors, cores, and memory 
+per executor, based on cluster resources, workload type, and observed metrics from Spark UI 
+such as CPU utilization, memory usage, and GC time. Optimal sizing balances parallelism, memory 
+efficiency, and GC overhead.
+
+45.	Explain spark-submit common parameters? 
 spark-submit is used to launch Spark applications. Common parameters define where the job runs,
 where the driver runs, how much memory and CPU are allocated to driver and executors, and 
 additional Spark configurations. These parameters help control performance, scalability, and 
@@ -707,41 +849,6 @@ spark-submit \
 --driver-memory 4g \
 --conf spark.sql.adaptive.enabled=true \
 sales_job.py
-
-24.	What is an executor? Example of methods that are executed on executor?
-An executor is a process running on a worker node that executes tasks assigned by the driver. 
-Executors perform the actual data processing, cache data in memory, and send results back to 
-the driver. Each Spark application has its own set of executors.
-
-25.	When would you use a broadcast join? 
-I use a broadcast join when one table is small and the other is large. Spark broadcasts the 
-small table to all executors so the join happens locally on each executor, avoiding shuffle 
-and significantly improving performance.
-
-26.	What is a broadcast variable? How does it work and gives performance benefit.
-
-
-
-
-27.	Cache v/s persist
-28.	What’s a shuffle?
-29.	What is Spill? How can we use this to increase performance.
-30.	Mention different ways for Spark performance tuning. Share use case, how you identified the problem, what is the problem, what is the solution.
-31.	Challenges faced in spark projects you worked on?
-32.	What is OOM error ? what are the possible reasons ?
-33.	Difference between data partition and table partition?
-34.	If both the dataset are large then how do you optimize the code?
-35.	What is a logical plan vs a physical plan? 
-36.	What is accumulator?
-37.	Spark Streaming vs Structured Streaming 
-38.	What is Dynamic Partition Pruning? 
-39.	Advantages n disadvantages of big data File formats parquet, avro, csv, json.
-40.	what are compression formats and its specialities
-41.	Spark optimization techniques. Share use case
-42.	How does Spark memory management works?
-43.	How many stages and task are created.
-44.	How are executors created in spark. What are the methods to identify executor size.
-45.	Explain spark-submit common parameters? 
 
 
 
