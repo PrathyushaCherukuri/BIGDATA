@@ -57,6 +57,99 @@ UNION ALL : includes duplicates
 Views : Do not stores data, runs original query each time
 Materialized Views : Stores aggregated result physically.
 
+CURSORS:
+========
+A cursor is a SQL mechanism that allows you to process rows one by one instead 
+of all at once.
+A cursor has 4 main steps:
+-> DECLARE — define the cursor
+-> OPEN — allocate memory and run SELECT
+-> FETCH — get one row at a time
+-> CLOSE — release memory
+
+Implicit cursors:
+----------------
+Automatically created by SQL for simple statements.
+
+Explicit Cursors:
+---------------
+You manually declare and control it.
+Used when you must process rows individually.
+
+Logical Cursors:
+----------------
+Static Cursor - Result set fixed at OPEN time
+Dynamic Cursor- Changes reflect data changes while cursor is open
+Forward-only Cursor - Can fetch only next row
+Scrollable Cursor - Can go next, prior, first, last
+
+SET OPERATIONS:
+===============
+UNION - Combine results, remove duplicates
+UNION ALL - Combine results, keep duplicates
+INTERSECT - Return only common rows (present in both queries)
+MINUS (Oracle) / EXCEPT (SQL Server) - Return rows in first query that are not in second
+
+Stored Procedures:
+=================
+A stored procedure is a precompiled SQL program stored in the database that can be 
+executed multiple times to perform operations such as querying, updating, or managing data.
+Advantages:
+-----------
+Perfromance
+Code-resuability
+Maintainability
+Consistency
+
+Ex:
+CREATE PROCEDURE IncreaseSalaryByAmount
+    @amount DECIMAL(10,2)  -- input parameter
+AS
+BEGIN
+    UPDATE employees
+    SET salary = salary + @amount;
+END;
+
+EXEC IncreaseSalaryByAmount 1000;
+
+Referential Integrity:
+=====================
+Referential integrity is a database rule that ensures foreign keys in a child table 
+always match primary keys in the parent table, preventing inconsistent or orphaned data.
+
+
+composite key, candidate key, surrogate key
+CASCADE:
+=======
+CASCADE is a rule used in database relationships that tells SQL what to 
+do with child (dependent) rows or objects when you modify a parent.
+
+-> ON DELETE CASCADE - Delete child when parent deleted
+-> ON UPDATE CASCADE - Update child when parent updated
+-> ON DELETE SET NULL - Set child FK to NULL
+-> ON UPDATE SET NULL - Set child FK to NULL
+-> ON DELETE SET DEFAULT - Set child to default value
+-> ON UPDATE SET DEFAULT - Set child to default value
+-> RESTRICT / NO ACTION - Prevent delete/update of parent
+-> DROP … CASCADE - Drop object + all dependencies
+-> DROP … RESTRICT - Prevent dropping if dependencies exist
+
+
+
+
+COALESCE:
+=========
+SELECT COALESCE(middle_name, nickname, 'No Name') AS display_name
+FROM users;
+logic:
+-----
+If middle_name is NOT NULL → return it
+Else try nickname
+If both are NULL → return 'No Name'
+
+
+
+
 
 Questions:
 
@@ -335,7 +428,7 @@ An index is a database object that improves the speed of data retrieval from a t
 26.	Ways to optimize sql query?
 - Using Proper indexing
 - Avoid SELECT *
-- Using WHERE clause effectiently
+- Using WHERE clause effeciently
 - Using joins instead of sub-queries
 - Limit rows
 - Avoid distinct if not needed

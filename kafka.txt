@@ -1,0 +1,36 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+kafka-topics --bootstrap-server ip-172-31-8-235.eu-west-2.compute.internal:9092,ip-172-31-14-3.eu-west-2.compute.internal:9092 --create --topic dec2025
+
+kafka-console-producer --bootstrap-server ip-172-31-8-235.eu-west-2.compute.internal:9092,ip-172-31-14-3.eu-west-2.compute.internal:9092 --topic dec2025
+
+kafka-console-consumer --bootstrap-server ip-172-31-8-235.eu-west-2.compute.internal:9092,ip-172-31-14-3.eu-west-2.compute.internal:9092 --topic dec2025
+
+-----------------------------------
+
+kafka-topics --bootstrap-server ip-172-31-8-235.eu-west-2.compute.internal:9092,ip-172-31-14-3.eu-west-2.compute.internal:9092 --create --topic 18dec2025 --partitions 2 --replication-factor 2
+
+kafka-console-producer --bootstrap-server ip-172-31-8-235.eu-west-2.compute.internal:9092,ip-172-31-14-3.eu-west-2.compute.internal:9092 --topic 18dec2025 --property parse.key=true --property key.separator=":"
+
+kafka-console-consumer --bootstrap-server ip-172-31-8-235.eu-west-2.compute.internal:9092,ip-172-31-14-3.eu-west-2.compute.internal:9092 --topic 18dec2025 --property print.key=true --property key.separator=":" --group cgdec
+
+kafka-console-consumer --bootstrap-server ip-172-31-8-235.eu-west-2.compute.internal:9092,ip-172-31-14-3.eu-west-2.compute.internal:9092 --topic 18dec2025 --property print.key=true --property key.separator=":" --group cgdec

@@ -1,0 +1,780 @@
+Can you explain what Hadoop is?
+Hadoop is an open-source framework used for distributed storage and processing of large 
+datasets. It allows data to be stored across multiple machines and processed in parallel, 
+which makes it scalable and fault-tolerant.
+
+Can you explain HDFS in a bit more detail?
+HDFS is a distributed file system designed to store very large files reliably. Files are split 
+into blocks and distributed across DataNodes, with replication to ensure fault tolerance.
+
+What are the main components of Hadoop?
+Hadoop has four main components:
+HDFS for storage
+YARN for resource management
+MapReduce for batch processing
+Hadoop Common which provides shared libraries
+
+What is the role of the NameNode?
+The NameNode manages metadata — things like file names, directory structure, and block locations.
+It doesn’t store the actual data itself, only information about where the data lives.
+
+What happens if a DataNode goes down?
+The NameNode detects the failure through missing heartbeats and re-replicates the blocks on 
+other DataNodes to maintain the configured replication factor.
+
+Why does HDFS use such large block sizes?
+Large block sizes, typically 128 MB, reduce disk seek operations and improve throughput, which 
+is ideal for big data workloads that process large files sequentially.
+
+What is YARN used for?
+YARN manages cluster resources. It handles job scheduling, resource allocation, and monitoring,
+ allowing multiple processing engines to run on the same cluster.
+
+Have you worked with MapReduce directly?
+I understand the MapReduce programming model, but in practice I’ve mostly used higher-level 
+tools like Hive, which abstract MapReduce logic behind SQL-style queries.
+
+What is Hive and why do we use it?
+Hive is a data warehouse layer on top of Hadoop that allows us to query data in HDFS using SQL-like syntax. 
+It simplifies big data analytics without needing to write MapReduce code.
+
+Does Hive store the actual data?
+No. Hive stores only metadata such as table definitions and schemas. The actual data remains in HDFS.
+
+What is the difference between managed and external tables?
+In managed tables, Hive owns the data, so dropping the table deletes the data.
+In external tables, Hive only manages the schema — the data stays intact even if the table is 
+dropped.
+
+When would you prefer an external table?
+When data is shared across teams or tools, or when I want to avoid accidentally deleting the 
+data — external tables are safer in those cases.
+
+What is partitioning in Hive?
+Partitioning splits data based on column values like date or country. It helps improve 
+performance by reducing the amount of data scanned during queries.
+
+How is bucketing different from partitioning?
+Partitioning is a logical division based on column values, 
+while bucketing is a physical division based on a hash function. 
+Bucketing is especially useful for optimizing joins.
+
+Which file formats have you used with Hive?
+I’ve worked with Parquet and ORC, which are columnar formats and offer better compression
+ and query performance compared to plain text.
+
+Why is Hive not suitable for real-time queries?
+Hive is designed for batch processing, so it has higher latency compared to transactional 
+databases. It’s great for analytics but not for low-latency OLTP workloads.
+
+How would you improve Hive query performance?
+Some common ways are:
+Using partitioning
+Choosing ORC or Parquet
+Avoiding SELECT *
+Enabling predicate pushdown
+Filtering data as early as possible
+
+Can Hive handle updates and deletes?
+Traditionally Hive was append-only. With ACID tables, limited updates and deletes are supported, 
+but they come with performance and configuration trade-offs.
+
+Schema on read or schema on write?
+Schema on read.
+
+Default replication factor?
+3.
+
+Hive or RDBMS for transactions?
+RDBMS
+
+Best use case for Hive?
+Large-scale analytical queries on big data.
+
+Any final thoughts on Hadoop and Hive?
+Hadoop provides scalable storage and processing, while Hive makes big data accessible through
+SQL. Together, they’re best suited for batch analytics at scale, especially when performance 
+tuning is done using partitions, efficient file formats, and query optimisation.
+
+How does HDFS achieve fault tolerance?
+Through block replication and continuous monitoring. The NameNode tracks block locations and 
+DataNode health. If a node fails, missing replicas are automatically re-created elsewhere, 
+ensuring durability without manual intervention.
+
+What are the limitations of HDFS that engineers should be aware of?
+HDFS is optimized for high-throughput sequential reads, not low-latency access or small files.
+Small file problems, metadata pressure on the NameNode, and limited random writes are common 
+architectural considerations.
+
+How does YARN differ from classic MapReduce?
+YARN separates resource management from processing logic, which allows multiple engines—
+MapReduce, Spark, Hive, Tez—to coexist on the same cluster instead of being locked into a 
+single execution model.
+
+What role does Hive play in a modern data platform?
+Hive acts as a SQL abstraction layer over data stored in HDFS or object storage.
+It enables analysts and engineers to run large-scale analytical queries without needing to 
+write distributed processing code directly.
+
+How does Hive execute a query under the hood?
+Hive parses HiveQL into a logical plan, optimizes it, then converts it into a physical 
+execution plan using engines like Tez or Spark. Execution is pushed down to the data layer 
+wherever possible to minimize I/O.
+
+Managed vs external tables — how do you decide?
+I default to external tables in production environments. They provide better data ownership 
+boundaries, reduce accidental data loss, and integrate cleanly with multi-tool ecosystems 
+like Spark, Presto, and data lakes.
+
+How do you design partitions effectively?
+Partitioning should align with query access patterns, not just data attributes. 
+I aim for partitions that are:
+High selectivity
+Evenly distributed
+Stable over time
+Over-partitioning can be just as harmful as under-partitioning.
+
+When would you use bucketing?
+Bucketing is useful when dealing with large joins on high-cardinality columns, especially 
+when combined with sorted buckets. That said, its benefits are workload-specific and less
+impactful in modern engines compared to partitioning
+
+ORC vs Parquet — how do you choose?
+Both are columnar, but:
+ORC integrates deeply with Hive and offers strong compression and indexing
+Parquet is more engine-agnostic and works well across Spark, Presto, and cloud data lakes
+The choice depends on the ecosystem and query engines in use.
+
+Why do Hive queries sometimes perform poorly?
+Common causes include:
+Poor partition strategy
+Excessive data skew
+Small file proliferation
+Inefficient joins
+Overuse of SELECT *
+Performance tuning in Hive is primarily about reducing data scanned and shuffled.
+
+How do ACID tables change Hive usage?
+ACID tables enable updates and deletes but introduce write amplification and compaction 
+overhead. I only enable them when mutation is a genuine business requirement, not by default.
+
+Would you build a new platform today using Hadoop and Hive?
+On-prem or regulated environments—yes.
+In the cloud, I’d typically favor object storage + Spark/Trino, using Hive mainly as a
+metastore, not the primary compute engine.
+
+What signals tell you Hive is the wrong tool?
+Sub-second latency requirements
+High-frequency updates
+Transaction-heavy workloads
+Small, rapidly changing datasets
+Those use cases belong to OLTP or real-time systems.
+
+How do you explain Hive to non-technical stakeholders?
+I describe Hive as a way to run SQL analytics over massive datasets cheaply, trading speed 
+for scale and cost efficiency.
+
+
+Hadoop
+1.Mention Hadoop distribution? Difference between CDH and CDP
+Hadoop distributions are vendor-packaged versions of Apache Hadoop that bundle ecosystem tools,
+management, security, and enterprise support. 
+Examples include distributions from Cloudera (CDH/CDP) and others like Hortonworks (legacy).
+Difference between CDH and CDP:
+CDH is Cloudera’s legacy, on-prem, Hadoop-centric distribution focused on HDFS and YARN for batch 
+and SQL analytics.
+CDP is Cloudera’s modern, cloud-ready data platform that works on-prem and in public cloud, 
+supports hybrid architectures, separates compute from storage, and adds built-in governance,
+security, ML, and streaming.
+
+2.Explain Hadoop Architecture
+Master- slave architecture.
+Hadoop is a distributed framework used to store and process big data. Its architecture consists
+of HDFS for distributed storage, YARN for cluster resource management, and MapReduce or Spark 
+for parallel processing. Data is stored in HDFS, resources are allocated by YARN, and processing 
+happens close to the data, making Hadoop scalable and fault tolerant.
+
+Storage layer -HDFS
+Resource Management - YARN
+Processing - MapReduce/Spark
+
+3.	Configuration files used during hadoop installation
+core-site.xml : defines core hadoop settings and configure hdfs default file system
+hdfs-site.xml : Configure HDFS specific settings
+Common properties:
+    dfs.replication
+    dfs.namenode.name.dir
+    dfs.datanode.data.dir
+mapred-site.xml : Configures MapReduce framework, Job History Server settings
+Common properties:
+    mapreduce.framework.name (set to yarn)
+yarn-site.xml
+Configures YARN resource management
+Common properties:
+    yarn.resourcemanager.hostname
+    yarn.nodemanager.aux-services
+
+4.	Difference between Hadoop fs and hdfs dfs
+hadoop fs
+Generic file system command
+Works with any filesystem configured in Hadoop
+    HDFS
+    Local file system
+    S3, ADLS, etc.
+Uses the default filesystem set in core-site.xml
+
+hdfs dfs
+HDFS-specific command
+Works only with HDFS
+Directly interacts with HDFS NameNode and DataNodes
+
+5.	Difference between Hadoop 2 and Hadoop 3
+Hadoop 2:
+Introduced YARN, separating resource management from processing
+Uses 3x replication, which consumes more storage
+Suitable for traditional big data workloads
+Hadoop 3:
+Supports multiple standby NameNodes → higher availability
+Introduces Erasure Coding → saves ~50% storage
+Better containerization and GPU support
+Improved performance and scalability
+
+6.	What is replication factor ? why its important
+It is the number of replicas of a data block in HDFS
+Default value = 3
+Set using the property:
+dfs.replication in hdfs-site.xml
+
+Fault tolerance
+If one DataNode fails, data is still available from another node
+Prevents data loss
+
+7.	What if Datanode fails?
+In Hadoop, DataNode failure is handled automatically. Each DataNode sends heartbeats to the 
+NameNode. If a DataNode stops sending heartbeats, the NameNode marks it as dead. Since HDFS 
+stores multiple replicas of each block, the data is still available on other DataNodes. 
+The NameNode then triggers re-replication to create new replicas and restore the configured 
+replication factor, ensuring no data loss.
+
+8.	What if Namenode fails?
+If the NameNode fails and High Availability is enabled, the Standby NameNode automatically 
+takes over as the Active NameNode. ZooKeeper manages this failover and ensures only one active 
+NameNode at a time. Client requests are redirected, and the cluster continues to run without 
+downtime.If High Availability is not enabled, the cluster becomes unavailable because the 
+NameNode is a single point of failure.
+
+9.	Why is block size 128 MB ? what if I increase or decrease the block size
+HDFS block size is 128 MB because Hadoop is designed for large files and sequential processing.
+A larger block size reduces the number of blocks, which lowers the metadata load on the 
+NameNode and improves throughput.
+If we increase the block size, we reduce metadata and overhead but lose parallelism.
+If we decrease the block size, we get more parallelism but increase NameNode memory usage and 
+scheduling overhead.
+
+10.	Small file problem
+The small file problem in Hadoop happens when there are too many small files in HDFS. 
+Each file, even if it is very small, consumes metadata in the NameNode. Since NameNode memory
+ is limited, storing millions of small files can overload the NameNode, reduce performance, and
+in extreme cases crash the cluster.
+
+11.	What is Rack awareness?
+Rack awareness in Hadoop is the ability of HDFS to understand the rack topology of the cluster.
+Using this information, HDFS places replicas of data blocks on different racks so that data 
+remains available even if an entire rack fails, and read performance is improved by choosing 
+the nearest replica.
+
+12.	What is SPOF ? how its resolved ?
+SPOF stands for Single Point of Failure. In Hadoop, the NameNode was a SPOF because if it 
+failed, the entire HDFS became inaccessible. This issue is resolved using High Availability, 
+where an Active NameNode is backed by a Standby NameNode. If the Active fails, the Standby 
+automatically takes over using ZooKeeper, ensuring continuous availability.
+
+13.	Explain zookeeper?
+ZooKeeper is a distributed coordination service used to manage configuration, synchronization,
+and leader election in distributed systems. In Hadoop, ZooKeeper is used for NameNode High
+Availability, where it monitors the Active and Standby NameNodes and performs automatic failover, 
+ensuring that only one NameNode is active at a time.
+
+14.	Difference between -put and -CopyFromLocal?
+-put is a generic command used to copy data into HDFS.
+-copyFromLocal clearly indicates copying data from the local file system to HDFS.
+
+15.	What is erasure coding?
+Erasure coding is a fault-tolerance mechanism in HDFS where data is split into data blocks and 
+parity blocks. Even if some blocks are lost due to node failures, the original data can be 
+reconstructed using the remaining blocks. Compared to replication, erasure coding provides 
+the same reliability while using significantly less storage.
+
+16.	What is speculative execution?
+Speculative execution is a mechanism in Hadoop where slow-running tasks are detected and 
+duplicate copies of those tasks are launched on other nodes. The task that finishes first 
+is accepted, and the other is killed. This helps reduce overall job completion time caused by 
+slow nodes.
+
+17.	Explain Yarn Architecture
+YARN stands for Yet Another Resource Negotiator. It is responsible for managing cluster 
+resources and scheduling applications in Hadoop. YARN separates resource management from data 
+processing and consists of ResourceManager, NodeManager, ApplicationMaster, and Containers.
+This makes Hadoop scalable and allows multiple applications to run simultaneously.
+
+18.	How does Applications Manager and Application Master  differ
+The Application Manager is a component of the ResourceManager that accepts job submissions and 
+starts the ApplicationMaster. The ApplicationMaster is created per application and is 
+responsible for negotiating resources, managing tasks, and monitoring execution until the job 
+completes.
+
+19.	Explain Mapreduce working?
+MapReduce works in two main phases: Map and Reduce.
+Input data stored in HDFS is split into blocks and processed by Map tasks in parallel. 
+The Map output is shuffled and sorted, then sent to Reduce tasks, which aggregate the results 
+and write the final output back to HDFS.
+
+20.	How many mappers are created for 1 GB file?
+The number of mappers created is equal to the number of input splits. By default, 
+one mapper is created per HDFS block.
+Calculation for a 1 GB file
+If HDFS block size = 128 MB (default):
+1 GB = 1024 MB
+1024 ÷ 128 = 8 blocks
+👉 8 mappers
+If HDFS block size = 64 MB:
+1024 ÷ 64 = 16 blocks
+👉 16 mappers
+
+21.	How many reducers are created for 1 GB file?
+The number of reducers does not depend on the input file size. It is explicitly configured by 
+the user or defaults to one reducer if not specified.
+default :1 
+
+22.	What is combiner? How does it work and provide performance gain? Where did you use it 
+A combiner is an optional local aggregation step in MapReduce. It runs after the map phase on 
+the same node and reduces intermediate key–value pairs before they are shuffled to reducers. 
+By reducing the amount of data transferred over the network, combiners significantly improve 
+job performance.
+
+How a Combiner works (step-by-step)
+-----------------------------------
+Mapper produces intermediate key–value pairs
+Combiner performs local aggregation
+Reduced output is sent to shuffle & sort
+Reducer performs final aggregation
+
+Performance gain (why it helps)
+-------------------------------
+Reduces network I/O
+Lowers shuffle and sort overhead
+Faster job completion
+
+Where did you use it
+--------------------
+I used a combiner in a Word Count and log aggregation job where the reducer logic was summation.
+This reduced shuffle data significantly and improved performance.
+
+
+23.	What is partitioner? How does it work and provide performance gain? Where did you use it
+A partitioner in MapReduce controls how intermediate key–value pairs are distributed to reducers.
+By default, Hadoop uses a hash-based partitioner, but we can implement a custom partitioner to 
+control data distribution. A good partitioner improves performance by balancing load across
+reducers and avoiding data skew.
+
+How a Partitioner works
+------------------------
+Mapper outputs (key, value) pairs
+Partitioner computes a partition number using the key
+Each partition maps to one reducer
+All records with the same key go to the same reducer
+
+Performance gain (why it matters)
+---------------------------------
+Ensures even data distribution
+Prevents reducer skew (one reducer overloaded)
+Improves parallelism and job completion time
+
+When to use a custom partitioner
+--------------------------------
+Skewed keys (e.g., country, date, user ID)
+Business-based grouping
+Range-based processing 
+
+
+Hive – Data warehouse
+=====================
+1.	Difference between Data warehouse and database?
+A database is designed for day-to-day transactional operations like insert, update, and delete,
+while a data warehouse is designed for analytical reporting and decision making using large 
+volumes of historical data.
+
+2.	Difference between Data warehouse and data mart?
+A data warehouse is a centralized repository that stores integrated data from across the 
+organization for enterprise-wide analysis, whereas a data mart is a smaller, subject-specific 
+subset of the data warehouse designed for a particular department or business function.
+EX:
+Data Warehouse → Stores all company data (sales, HR, finance, operations)
+Data Mart → Stores only sales data for the sales team
+
+3.	Difference between OLTP vs OLAP
+OLTP systems handle day-to-day transactional operations like inserts, updates, and deletes, 
+while OLAP systems are used for analytical queries, reporting, and decision-making on large 
+volumes of historical data.
+Ex:
+OLTP → ATM withdrawal, online order placement
+OLAP → Monthly sales analysis, year-over-year revenue trends
+
+4.	Why hive metadata is stored in SQL?
+Hive metadata is stored in an SQL database because metadata is structured, relational, and 
+frequently queried. Using an RDBMS provides fast access, transactional consistency, concurrency
+control, and reliability, which are critical for managing tables, schemas, partitions, and 
+locations efficiently.
+
+5.	Which SQL is the default database for hive?
+Apache Derby is used:
+Only for development or testing
+Supports single-user access
+In production, Hive metastore is usually configured with:
+MySQL
+PostgreSQL
+Oracle
+
+6.	What is managed table?
+A managed table in Hive is a table where Hive owns the data and metadata. When the table is 
+dropped, Hive deletes both the table metadata and the underlying data from HDFS.
+
+7.	What is external table?
+An external table in Hive is used when the data already exists outside the Hive warehouse.
+Hive only stores the metadata, and when the table is dropped, the data remains intact in HDFS.
+
+8.	When do we use external table?
+We use an external table when data already exists outside Hive, when the same data is shared 
+across multiple tools, or when we want to prevent accidental data deletion. Dropping an 
+external table removes only metadata, not the actual data.
+
+9.	Diff between managed and external table?
+In a managed table, Hive manages both metadata and data, so dropping the table deletes the data
+from HDFS. In an external table, Hive manages only metadata; the data is stored externally and 
+is not deleted when the table is dropped.
+Managed → Hive controls data
+External → Hive queries data
+
+10.	What happens if you don’t provide location to external table?
+If no LOCATION is specified for an external table, Hive creates the table in the default Hive
+warehouse directory, but it still treats it as an external table. When the table is dropped, 
+Hive deletes only the metadata and not the data.
+
+11.	Performance optimization in hive?
+Hive performance can be optimized by reducing the amount of data scanned using partitioning 
+and bucketing, using efficient file formats like ORC or Parquet, enabling execution engines 
+like Tez or Spark, and tuning joins, memory, and parallelism. 
+These techniques reduce disk I/O, network shuffling, and query execution time.
+
+12.	Explain partitioning? Where did you use with example
+Partitioning in Hive splits a table into multiple directories based on partition columns like 
+date or country. When a query filters on a partition column, Hive reads only the matching partitions 
+instead of scanning the entire table, which significantly improves query performance.
+I used partitioning on date columns in large fact tables like sales and logs, where most
+queries filter data by date ranges. This reduced query execution time significantly.
+
+13.	Explain bucketing? Where did you use with example
+Bucketing in Hive splits table data into a fixed number of buckets using a hash function on a 
+column. Each bucket is stored as a separate file. Bucketing improves performance for joins, 
+aggregations, and sampling because Hive can efficiently match buckets instead of scanning all 
+data.
+
+14.	Explain transactional table and implement merge to load incremental data.
+A transactional table in Hive supports ACID properties and allows row-level INSERT, UPDATE, 
+DELETE, and MERGE operations. These tables use ORC format and maintain delta files to track 
+changes. MERGE is commonly used to load incremental data by updating existing records and 
+inserting new ones in a single statement.
+
+15.	Explain views vs materialized views
+A view is a virtual table that stores only the SQL query and does not store data, whereas a 
+materialized view physically stores the query result and is used to improve query performance 
+by avoiding repeated computation.
+
+17.	Why is dimensional modelling necessary?
+Dimensional modeling is necessary because it organizes data in a way that is easy to understand,
+fast to query, and optimized for analytical reporting. It separates business measures into fact
+tables and descriptive attributes into dimension tables, making OLAP queries efficient and 
+user-friendly.
+
+18.	What is fact and dimension tables?
+In dimensional modeling, a fact table stores measurable business data like sales amount or 
+quantity, while dimension tables store descriptive information such as date, product, customer,
+or region. Fact tables link to dimension tables using foreign keys and together they support 
+analytical queries.
+
+19.	What is junk dimension
+A junk dimension is a dimension table that combines multiple low-cardinality attributes such as
+flags and indicators into a single dimension to avoid cluttering the fact table with many small
+columns.
+
+20.	Star Schema
+A star schema is a dimensional data model where a central fact table is connected to multiple 
+dimension tables in a star-like structure. It is simple, denormalized, and optimized for fast 
+analytical queries.
+
+21.	Snowflake schema
+A snowflake schema is a dimensional data model where dimension tables are normalized into 
+multiple related tables, forming a snowflake-like structure around a central fact table. 
+It reduces data redundancy but requires more joins compared to a star schema.
+
+22.	Difference between star and snowflake schema.
+The main difference between star and snowflake schema is how dimension tables are designed.
+In a star schema, dimension tables are denormalized, which means fewer joins and faster query
+performance.
+In a snowflake schema, dimension tables are normalized into multiple tables, which reduces data 
+redundancy but increases the number of joins and query complexity.
+
+Star schema is preferred for reporting and analytics, while snowflake schema is used when 
+storage optimization and complex hierarchies are important.
+
+23.	What is surrogate Key
+A surrogate key is an artificial, system-generated unique identifier used in data warehouses, 
+especially in dimension tables. It has no business meaning and is used instead of natural or 
+business keys to ensure consistency, performance, and easier handling of data changes.
+
+24.	What is CDC
+CDC (Change Data Capture) is a technique used to identify and capture changes in a source 
+system—such as inserts, updates, and deletes—and propagate only those changes to a target 
+system like a data warehouse or data lake, instead of reloading the full data.
+
+25.	What is SCD and its types
+SCD - Slowly Changing Dimensions
+    SCD Type 0: Retain orginal (no changes allowed once created)
+    SCD Type 1: Overwrite (no history kept, correcting errors)
+    SCD Type 2: New row is inserted for every change (history is preserved)
+    SCD Type 3: Add new attribute (Partial history, Store limited history by adding extra columns)
+    SCD Type 4: History table(Changes recorded in separate history table)
+
+26.	Explain SCD type 2 with code example.
+SCD Type 2 is used to maintain full history of changes in dimension attributes.
+When a dimension record changes, the existing record is expired, and a new record is inserted 
+with a new surrogate key. This allows us to track historical changes over time.
+
+27.	When to use CDC/SCD  
+CDC is used to capture and move data changes from source systems to targets incrementally.
+SCD is used inside the data warehouse to manage how dimension changes are stored, especially 
+when history must be preserved.
+ 
+ 
+------------------- Spark
+1.	Advantages of spark over MapReduce
+Spark is faster and more flexible than MapReduce because it uses in-memory processing, supports
+multiple workloads like batch, streaming, SQL, and machine learning, and uses a DAG-based 
+execution engine instead of rigid map and reduce phases. This significantly reduces disk I/O 
+and improves performance.
+
+2.	Describe the architecture of Spark
+Apache Spark follows a master–worker architecture. The Driver program is the brain of the 
+application; it creates the Spark session, builds a DAG of tasks, and schedules work. 
+A Cluster Manager allocates resources in the cluster. Executors run on worker nodes, execute 
+tasks in parallel, and store data in memory. This architecture enables fast, scalable, and 
+fault-tolerant data processing.
+
+3.	Yarn architecture
+YARN stands for Yet Another Resource Negotiator and is the resource management layer of Hadoop.
+It separates resource management from data processing. YARN consists of a ResourceManager, 
+NodeManagers, ApplicationMaster, and containers. The ResourceManager manages cluster-wide 
+resources, NodeManagers manage resources on individual nodes, the ApplicationMaster manages a 
+specific application, and containers are used to execute tasks. This architecture allows 
+multiple processing frameworks like MapReduce and Spark to run on the same cluster.
+
+4.	What is a cluster manager? Which ones have you used?
+A cluster manager is responsible for managing cluster resources like CPU and memory and 
+allocating them to applications. In Apache Spark, the cluster manager does not execute 
+tasks itself but decides where and how many resources should be assigned to executors.
+
+5.	Difference between SparkContext and SparkSession
+SparkContext is the original entry point to Spark that manages the connection to the cluster 
+and executes RDD-based operations.
+SparkSession, introduced in Spark 2.0, is a unified entry point that internally uses 
+SparkContext and also provides access to Spark SQL, DataFrames, Datasets, and Hive features. 
+Today, SparkSession is the recommended way to start Spark applications.
+
+6.	Describe spark modes to execute the program.
+Spark supports three execution modes: Local, Client, and Cluster.
+In Local mode, everything runs on a single machine.
+In Client mode, the Driver runs on the client machine while executors run on the cluster.
+In Cluster mode, the Driver runs inside the cluster, making it more suitable for production 
+workloads.
+
+7.	What is dataframe and RDD. When do you use RDD over Dataframe.
+An RDD is Spark’s low-level, immutable distributed collection of objects that provides 
+fine-grained control over data and execution.
+A DataFrame is a higher-level, structured abstraction similar to a table with named columns and
+schema. DataFrames are optimized by Spark’s Catalyst optimizer and are generally faster and 
+easier to use. 
+
+8.	Transformation vs Action
+In Spark, transformations create a new dataset from an existing one and are lazily evaluated, 
+meaning they are not executed immediately. Actions trigger the actual execution of the 
+transformations and return results or write data to storage.
+
+9.	Narrow transformation vs Wide transformation
+Narrow transformations are those where each output partition depends on only one input partition, 
+so no data shuffle is required.
+Wide transformations are those where output partitions depend on multiple input partitions, 
+which causes a shuffle across the cluster. Wide transformations are more expensive than narrow
+ones.
+
+10.	What is lazy evaluation 
+Lazy evaluation in Spark means that transformations are not executed immediately. 
+Spark builds a DAG of operations and waits until an action is triggered. 
+This allows Spark to optimize the execution plan and avoid unnecessary computations,
+improving performance.
+ 
+ 11. Difference between map and flatmap
+ map applies a function to each element and returns exactly one output per input, while 
+flatMap can return zero, one, or multiple outputs per input by flattening the result. 
+flatMap is commonly used when one record needs to be expanded into multiple records,
+such as splitting a sentence into words.
+
+12.	What is DAG?
+DAG stands for Directed Acyclic Graph. In Spark, it is a graph that represents the sequence 
+of transformations applied to data, where nodes are operations and edges represent data flow. 
+It is acyclic, meaning it has no loops. Spark uses the DAG to optimize execution, divide jobs 
+into stages, and schedule tasks efficiently.
+
+13.	What is lineage?
+Lineage in Spark is the dependency graph that tracks how an RDD or DataFrame is derived from 
+input data through transformations. If a partition is lost due to failure, Spark uses this 
+lineage to recompute only the lost partitions, providing fault tolerance without replication.
+
+14.	Difference between DAG and Lineage?
+DAG represents the execution plan of a Spark job and is used for scheduling and optimization, 
+while lineage represents the transformation history of an RDD or DataFrame and is used for 
+fault tolerance and recovery. DAG helps Spark decide how to execute the job, whereas lineage 
+helps Spark recompute lost data.
+
+15.	What happens when you submit a spark job
+When a Spark job is submitted, the Driver program starts and creates a SparkSession. 
+Spark builds a DAG from the transformations defined in the code. When an action is encountered,
+Spark contacts the cluster manager to request resources. Executors are launched on worker nodes
+, the DAG is divided into stages and tasks, and tasks are executed in parallel. Finally, results 
+are returned to the Driver or written to storage.
+
+16.	Client mode vs cluster mode ? when to use?
+In Client mode, the Driver runs on the client machine that submits the job, 
+while executors run on the cluster. If the client goes down, the job fails.
+In Cluster mode, the Driver runs inside the cluster, so the job continues even if the client 
+disconnects. That’s why Cluster mode is preferred for production workloads.
+
+17.	Difference between a DF and a DS 
+DataFrame is like a distributed SQL table.
+Dataset provides type safety with Spark optimizations.
+
+18.	Difference between a Pandas DF and a Spark DF 
+A Pandas DataFrame works on a single machine and processes data in memory, making it suitable 
+for small to medium datasets. A Spark DataFrame is a distributed data structure that processes 
+data across a cluster, enabling it to handle very large datasets with fault tolerance and parallelism.
+
+19.	Coalesce vs repartition ? when to use ?
+coalesce:
+--------
+Coalesce is an optimized way to reduce partitions.
+repartition:
+------------
+Repartition ensures uniform data distribution.
+
+20.	If Coalesce and repartition can reduce the partitions then which one will you use?
+When reducing partitions, I prefer coalesce because it avoids a full shuffle and is faster.
+However, if the data is skewed or I need evenly balanced partitions for parallel processing, 
+I use repartition, even though it is more expensive.
+
+21.	Scenario  when you need to reduce the partitions?
+We reduce partitions in Spark mainly to avoid the small files problem, reduce task overhead, 
+and optimize output performance. This is usually done after wide transformations like joins or
+aggregations, and just before writing data to storage.
+
+22.	When do you need to increase the partitions?
+We increase partitions in Spark when we need more parallelism, better resource utilization, or 
+to fix data skew. This is typically done when processing large datasets, after reading small 
+numbers of partitions, or before expensive operations like joins and aggregations.
+
+23.	What is a driver?  Example of methods that are executed on driver?
+spark-submit is used to launch Spark applications. Common parameters define where the job runs,
+where the driver runs, how much memory and CPU are allocated to driver and executors, and 
+additional Spark configurations. These parameters help control performance, scalability, and 
+execution mode.
+
+Ex:
+spark-submit \
+--master yarn \
+--deploy-mode cluster \
+--name SalesJob \
+--num-executors 8 \
+--executor-cores 4 \
+--executor-memory 8g \
+--driver-memory 4g \
+--conf spark.sql.adaptive.enabled=true \
+sales_job.py
+
+24.	What is an executor? Example of methods that are executed on executor?
+An executor is a process running on a worker node that executes tasks assigned by the driver. 
+Executors perform the actual data processing, cache data in memory, and send results back to 
+the driver. Each Spark application has its own set of executors.
+
+25.	When would you use a broadcast join? 
+I use a broadcast join when one table is small and the other is large. Spark broadcasts the 
+small table to all executors so the join happens locally on each executor, avoiding shuffle 
+and significantly improving performance.
+
+26.	What is a broadcast variable? How does it work and gives performance benefit.
+
+
+
+
+27.	Cache v/s persist
+28.	What’s a shuffle?
+29.	What is Spill? How can we use this to increase performance.
+30.	Mention different ways for Spark performance tuning. Share use case, how you identified the problem, what is the problem, what is the solution.
+31.	Challenges faced in spark projects you worked on?
+32.	What is OOM error ? what are the possible reasons ?
+33.	Difference between data partition and table partition?
+34.	If both the dataset are large then how do you optimize the code?
+35.	What is a logical plan vs a physical plan? 
+36.	What is accumulator?
+37.	Spark Streaming vs Structured Streaming 
+38.	What is Dynamic Partition Pruning? 
+39.	Advantages n disadvantages of big data File formats parquet, avro, csv, json.
+40.	what are compression formats and its specialities
+41.	Spark optimization techniques. Share use case
+42.	How does Spark memory management works?
+43.	How many stages and task are created.
+44.	How are executors created in spark. What are the methods to identify executor size.
+45.	Explain spark-submit common parameters? 
+
+
+
+46.	What is data skew? How do you fix it? 
+Data skew occurs when data is unevenly distributed across partitions, causing some tasks to 
+process much more data than others. This leads to long-running tasks, poor parallelism, and 
+overall job slowdown. In Spark, data skew is commonly seen during joins or aggregations.
+We fix it using techniques like repartitioning, key salting, broadcast joins, and Adaptive 
+Query Execution.
+
+47.	What is key salting? Use case and program
+Key salting is used to handle data skew when one or few keys dominate the dataset. 
+We add a random or deterministic prefix (salt) to the key so that records with the same 
+original key are distributed across multiple partitions. After processing, the salt is removed
+and results are aggregated back to the original key.
+
+48.	What is Adaptive Query Execution? 
+Adaptive Query Execution is a Spark feature that dynamically optimizes queries during runtime 
+using real data statistics. It can change join strategies, handle data skew, and adjust shuffle
+partitions to improve performance without manual tuning.
+
+
+49.	For 1 GB file how many partitions will be created. ? support your answer with practical 
+For a 1 GB file, Spark creates partitions based on the HDFS block size.
+With the default 128 MB block size, Spark creates 8 partitions.
+
+50.	For any given program, how many jobs , stages and task are created.
+In Spark, each action creates one job.
+Stages are created based on shuffle boundaries—each shuffle splits the job into multiple stages.
+Tasks are created per stage, and the number of tasks equals the number of partitions in that stage.
+
+51.	Role of checkpointing in spark and spark streaming.
+Checkpointing in Spark is used to persist data or state to reliable storage to break long 
+lineage chains and enable faster recovery from failures. In Spark Streaming, checkpointing is
+mandatory for stateful operations because it stores streaming metadata and state so the 
+application can resume correctly after a crash.
