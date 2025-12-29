@@ -61,7 +61,7 @@ Bucketing is especially useful for optimizing joins.
 
 Which file formats have you used with Hive?
 I’ve worked with Parquet and ORC, which are columnar formats and offer better compression
- and query performance compared to plain text.
+and query performance compared to plain text.
 
 Why is Hive not suitable for real-time queries?
 Hive is designed for batch processing, so it has higher latency compared to transactional 
@@ -173,7 +173,6 @@ Those use cases belong to OLTP or real-time systems.
 How do you explain Hive to non-technical stakeholders?
 I describe Hive as a way to run SQL analytics over massive datasets cheaply, trading speed 
 for scale and cost efficiency.
-
 
 Hadoop
 1.Mention Hadoop distribution? Difference between CDH and CDP
