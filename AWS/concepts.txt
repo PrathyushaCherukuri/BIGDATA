@@ -1,0 +1,29 @@
+Storage Classes
+Availability Zone 
+S3                  - File Storage
+Lambda              - Run Code
+Lambda Layers       
+Lambda Env Var
+Secrets Manager     
+IAM                 - Security
+Python SDK - boto3
+RDS                 - SQL Database
+Eventbridge         - Scheduling
+Cloudwatch trigger
+Cloudwatch          - Monitoring tool
+Glue                - Data Processing       
+Glue crawler        - infer schema
+Glue Data catalog
+Athena              - Query Data
+
+
+
+
+
+
+
+
+
+
+
+
