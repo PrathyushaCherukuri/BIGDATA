@@ -1,0 +1,99 @@
+AWS Lambda is a serverless compute service by Amazon Web Services that lets
+you run code without provisioning or managing servers.You pay only for execution time.
+
+Benfits:
+--------
+No server management
+Automatic scaling
+Pay-per-use
+Built-in fault tolerance
+Tight integration with AWS services
+
+Where AWS Lambda Fits in Real Architectures:
+--------------------------------------------
+Event-driven workloads
+Near-real-time processing
+Glue logic between services
+Lightweight transformations
+Reactive systems
+
+In real projects (like streaming, APIs, alerts, ingestion), Lambda acts as:
+Producer
+Consumer
+Validator
+Router
+Orchestrated step
+
+Real-Time Invocation Patterns:
+==============================
+Synchronous Invocation:
+----------------------
+Used when:
+API Gateway calls Lambda
+Client expects immediate response
+
+Asynchronous Invocation:
+-----------------------
+Used when:
+EventBridge
+S3 events
+SNS
+
+Stream-Based Invocation:
+------------------------
+Kinesis
+DynamoDB Streams
+
+Concurrency:
+===========
+number of Lambda instances running simultaneously.
+
+Idempotency:
+===========
+Because Lambda can:
+Retry
+Replay
+Reprocess batches
+
+Kinesis + Lambda Challenges:
+===========================
+Shard blocking
+Poison pills
+Replays
+Duplicate processing
+
+| Use Case              | Lambda | Glue |
+| --------------------- | ------ | ---- |
+| API / streaming       | ✅      | ❌    |
+| File-based ETL        | ❌      | ✅    |
+| Micro-transformations | ✅      | ❌    |
+| Large joins           | ❌      | ✅    |
+| Near-real-time        | ✅      | ❌    |
+
+Security in Real Projects:
+=========================
+Lambda never directly gets permissions.
+
+Instead:
+--------
+IAM Execution Role attached
+Least privilege access
+Secrets from:
+Secrets Manager
+Parameter Store
+
+Never:
+-----
+Hardcode secrets
+Put credentials in code
+Give wildcard permissions
+
+Real Interview Architecture Explanation (Sample)
+================================================
+“We use AWS Lambda as the real-time ingestion and validation layer. 
+Events arrive via Kinesis/EventBridge, Lambda validates and routes data—bad 
+records to DLQ, valid ones to DynamoDB and S3. Batch transformations are handled
+by Glue. Step Functions orchestrate retries and dependencies. All Lambdas are 
+idempotent to handle retries and replays.”
+
+

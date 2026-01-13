@@ -1,0 +1,161 @@
+AWS Glue is a serverless ETL service by Amazon Web Services built on Apache Spark.
+
+Glue Architecture:
+==================
+-Glue Jobs (Spark)
+-Glue Crawlers (schema discovery)
+-Glue Data Catalog (metadata store)
+-Glue Triggers / Workflows
+-Glue Studio (UI)
+
+note: Glue processes data in S3, not inside Glue itself.
+
+Glue Job Types:
+===============
+Spark ETL Jobs
+- PySpark / Scala
+- Used for transformations
+- Most common in production
+
+Python Shell Jobs
+- Lightweight Python scripts
+- No Spark
+
+Glue Data Catalog
+=================
+Glue Data Catalog is:
+Central metadata repository
+Stores table schema, location, partitions
+
+Used by:
+-------
+Glue Jobs
+Athena
+Redshift Spectrum
+
+** note: Catalog stores metadata only, not data.
+
+Crawlers:
+========
+Crawlers:
+Scan data in S3
+Infer schema
+Create/update tables
+
+Crawlers do NOT:
+❌ Clean data
+❌ Deduplicate
+❌ Transform data
+
+Partitions:
+===========
+Partitioning improves:
+Performance
+Cost
+Query speed
+
+Typical partition keys:
+    year / month / day / hour
+
+Glue job best practice:
+------------------------
+Write partitioned data
+Let crawler detect partitions
+Enable partition pruning in Athena
+
+Glue Job Bookmarks:
+===================
+Bookmarks track:
+Previously processed files
+
+Good for:
+Append-only data
+
+Limitations:
+------------
+Not reliable for:
+Updates
+Deletes
+Reprocessing
+Complex logic
+
+Execution Environment (DPUs & Workers):
+======================================
+Glue uses:
+Workers instead of EC2
+Worker types:
+G.1X
+G.2X
+
+Transformations in Glue (Spark Concepts)
+=======================================
+You must understand:
+- Narrow vs wide transformations
+- Shuffles
+- Joins
+- Aggregations
+
+Avoid:
+- Large unpartitioned joins
+- collect() on big data
+
+Input & Output Formats
+======================
+Common formats:
+- JSON (raw)
+- Parquet (curated)
+- ORC
+
+Best practice:
+- Raw → JSON
+- Curated → Parquet (compressed, columnar)
+
+Idempotency in Glue:
+===================
+Glue jobs are:
+❌ Not idempotent by default
+
+You must handle:
+- Reruns
+- Failures
+- Reprocessing
+
+Techniques:
+- Deduplication logic
+- Partition overwrite
+- Merge logic
+
+Error Handling in Glue:
+======================
+Glue does NOT:
+- Auto-retry rows
+- Auto-DLQ records
+
+You must:
+- Validate data early
+- Handle corrupt records
+- Log errors clearly
+- Fail fast or quarantine bad data
+
+Glue Scheduling & Orchestration
+===============================
+Options:
+- Glue triggers
+- EventBridge
+- Step Functions
+Production preference:
+- Step Functions for complex workflows.
+
+Security Basics:
+================
+Glue security includes:
+
+- IAM role per job
+- Least privilege access
+- Encryption at rest (S3)
+- Encryption in transit
+
+Never:
+❌ Hardcode credentials
+❌ Use wildcard permissions
+
