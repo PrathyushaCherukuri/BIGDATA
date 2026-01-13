@@ -1,6 +1,6 @@
 AWS Glue is a serverless ETL service by Amazon Web Services built on Apache Spark.
 
-Glue Architecture:
+Glue Architecture:                                                    
 ==================
 -Glue Jobs (Spark)
 -Glue Crawlers (schema discovery)
@@ -158,4 +158,45 @@ Glue security includes:
 Never:
 ❌ Hardcode credentials
 ❌ Use wildcard permissions
+
+DynamicFrame vs DataFrame (When & Why)
+========================================
+At senior level:
+
+You do not debate which is better
+You explain when to use each
+
+Expected stance:
+DynamicFrame → ingestion, dirty data, schema drift
+DataFrame → transformations, joins, performance-critical paths
+
+Red flag answer ❌:
+“I always use DynamicFrames.”
+
+
+Production Readiness Checklist (Senior)
+=====================================
+You should always think in terms of:
+Can this be rerun?
+Can this be scaled?
+Can this be monitored?
+Can this fail safely?
+Can this be backfilled?
+
+Senior-Level Summary Answer (Memorize)
+
+“In production, AWS Glue is a managed Spark layer responsible for batch transformations, 
+incremental processing, schema governance, and publishing curated datasets. I design Glue 
+jobs to be idempotent, partition-aware, cost-optimized, and fully orchestrated, with 
+explicit handling of schema evolution, late data, and reprocessing.”
+
+Glue  vs Databricks vs EMR
+===========================
+“I choose Amazon Web Services Glue when I want serverless Spark with AWS-native governance
+and minimal operational overhead.
+Databricks is better for advanced analytics, ML workloads, and high developer productivity.
+Amazon EMR is my choice when I need fine-grained control over Spark, long-running jobs, or 
+custom configurations.
+The decision depends on simplicity vs productivity vs control.”
+
 
