@@ -1,0 +1,76 @@
+What Amazon S3 REALLY Is
+
+Amazon S3 is:
+- Object storage, not a filesystem
+- Designed for immutable data
+- Backed by distributed storage across Availability Zones(AZs)
+- The system of record in modern data platforms
+
+Key characteristics:
+- Infinite scale
+- Strong read-after-write consistency
+- Eventual delete consistency (older behavior still discussed)
+- Data accessed via HTTP APIs, not POSIX (Portable Operating System Interface)
+
+🎯 Senior framing:
+“S3 is not Hadoop HDFS replacement — it’s the source of truth.”
+
+S3 Mental Model (Very Important)
+================================
+Think of S3 as:
+- A key-value store
+- Key = full object path
+- Buckets are global namespaces
+- “Folders” are logical prefixes, not real directories
+
+  s3://data-lake/raw/events/2025/01/12/file.json
+
+Bucket: data-lake
+Key: raw/events/2025/01/12/file.json
+
+Why S3 Is the Data Lake Foundation
+===================================
+S3 is used because:
+- Cheap & durable
+- Decouples storage from compute
+
+Supports multiple engines:
+- Glue
+- EMR (Elastic Map Reduce)
+- Athena
+- Redshift Spectrum
+
+Senior quote interviewers love:
+“Compute is ephemeral (temporary & disposable), data is permanent.”
+
+S3 Data Lake Zoning (Architecture Expectation)
+==============================================
+At 8+ years, you must talk in zones:
+
+| Zone               | Purpose               |
+| ------------------ | --------------------- |
+| Raw / Bronze       | Immutable ingestion   |
+| Processed / Silver | Cleaned, deduplicated |
+| Curated / Gold     | Analytics-ready       |
+
+Golden rule:
+❌ Never overwrite raw data
+✅ Reprocessing always starts from raw
+
+File Formats & Why They Matter
+===============================
+Raw Zone:
+- JSON / CSV / Avro
+- Schema-on-read
+- Minimal validation
+
+Curated Zone
+- Parquet / ORC
+- Columnar
+- Compressed
+- Partitioned
+
+Interview-safe line:
+--------------------
+“Format choice directly impacts Athena and Spark cost.”
+
