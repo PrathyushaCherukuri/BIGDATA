@@ -1,0 +1,120 @@
+Amazon EMR (Elastic MapReduce) is a managed big-data cluster service on Amazon Web Services
+that runs distributed frameworks like Apache Spark and Hadoop, providing fine-grained 
+control over compute, configuration, and scaling.
+
+Amazon EMR is:
+- Managed clusters, not serverless
+- Control-first, not simplicity-first
+- Designed for long-running, stateful, or performance-critical workloads
+- Best when you need Spark internals access
+
+Senior framing:
+---------------
+“EMR trades operational simplicity for control and performance.”
+
+Where EMR Fits in a Big Data Architecture:
+==========================================
+EMR sits in the heavy processing layer:
+
+    S3 (Raw / Curated)
+            ↓
+    EMR (Spark / Hive / Streaming)
+            ↓
+    S3 / Redshift / HBase
+
+EMR is chosen when:
+
+- Glue becomes restrictive
+- Lambda is insufficient
+- You need persistent or streaming compute
+
+EMR Cluster Architecture (Must Know)
+
+An EMR cluster typically has:
+
+🔹 Master Node
+================
+- YARN ResourceManager
+- Spark Driver
+- Cluster coordination
+
+🔹 Core Nodes
+==============
+- Store HDFS data
+- Run Spark executors
+- Critical for data durability
+
+🔹 Task Nodes
+==============
+- Compute-only
+- No HDFS storage
+- Ideal for auto-scaling & Spot Instances
+
+Senior insight interviewers love:
+---------------------------------
+“We scale task nodes aggressively and keep core nodes stable.”
+
+🚫 Red flag:
+============
+“All nodes are the same.”
+
+EMR Deployment Options:
+========================
+EMR on EC2
+-----------
+- Full control
+- Most common
+- Higher ops responsibility
+
+EMR on EKS
+-------------
+- Kubernetes-based
+- Containerized Spark
+- Advanced but complex
+
+EMR Serverless
+---------------
+- No cluster management
+- Less tuning flexibility
+- Somewhere between Glue and EMR
+
+Spark Performance Tuning on EMR (Very Important)
+================================================
+Interviewers expect Spark internals, not EMR console talk.
+
+You must talk about:
+- Executor memory & cores
+- Shuffle partitions
+- Broadcast joins
+- Data skew
+- Partition sizing
+
+🚫 Weak answer:
+“We increased the number of nodes.”
+
+✅ Strong answer:
+“We reduced shuffle by repartitioning data and handling skew using broadcast joins.”
+
+Handling Data Skew (Classic Senior Question)
+==========================================
+What breaks:
+- Long tail tasks
+- Executors idle
+- Job never finishes
+
+Expected fixes:
+- Key salting
+- Broadcast joins
+- Custom partitioners
+- Skew hints
+
+Scaling Strategy in EMR
+========================
+- Correct senior approach:
+- Core nodes → stable
+- Task nodes → elastic
+- Auto Scaling policies based on YARN metrics
+
+Senior insight:
+---------------
+“Scaling core nodes causes data rebalancing — do it carefully.”
