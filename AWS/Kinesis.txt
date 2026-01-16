@@ -1,0 +1,32 @@
+“Amazon Kinesis is a fully managed real-time streaming service on Amazon Web Services used 
+to ingest, buffer, and process high-throughput event data with ordered processing at the 
+shard level and at-least-once delivery semantics.”
+
+Kinesis Data Streams:
+---------------------
+Kinesis Data Streams is a real-time, durable event streaming service that acts as a buffer 
+between producers and consumers.
+
+Kinesis Data Firehose:
+----------------------
+Kinesis Data Firehose is a fully managed data delivery service, not a streaming engine.
+
+“Firehose is a managed pipe from producers to destinations.”
+
+| Dimension    | Data Streams       | Firehose          |
+| ------------ | ------------------ | ----------------- |
+| Purpose      | Streaming platform | Delivery pipeline |
+| Replay       | ✅ Yes              | ❌ No           |
+| Consumers    | Many               | One               |
+| Ordering     | Per shard          | ❌                |
+| Processing   | Custom             | Minimal           |
+| Ops          | Medium             | Very low          |
+| Cost control | Shards             | Volume-based      |
+
+
+Senior-Level One-Line Summary (Memorize)
+----------------------------------------
+“Kinesis Data Streams is a real-time, replayable streaming platform with shard-based 
+ordering, while Kinesis Data Firehose is a fully managed delivery service designed to 
+reliably load data into AWS destinations with minimal operational overhead.”
+
