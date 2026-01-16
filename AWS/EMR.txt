@@ -118,3 +118,9 @@ Scaling Strategy in EMR
 Senior insight:
 ---------------
 “Scaling core nodes causes data rebalancing — do it carefully.”
+
+
+“Amazon EMR is a managed big-data cluster platform that provides full control over Spark
+and Hadoop workloads. I use it selectively—when performance tuning, long-running jobs, or 
+custom configurations justify the operational overhead.”
+

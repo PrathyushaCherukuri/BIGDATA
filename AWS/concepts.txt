@@ -1,3 +1,107 @@
+Core Data Storage & Management:
+- AWS S3
+- AWS Glue Data catalog
+
+Data Processing & Transformation
+- AWS Glue
+- Amazon EMR
+- AWS Lambda
+- Amazon EC2
+
+Data Ingestion & Streaming
+- Amazon Kinesis
+- AWS Database Migration Service (DMS)
+- Amazon Simple Queue Service (SQS) & SNS
+
+Querying & Analytics
+- Amazon Athena
+- Amazon Redshift
+- Amazon QuickSight
+
+Orchestration & Workflow Automation
+- AWS Step Functions
+- Amazon EventBridge / CloudWatch Events
+
+Databases & Operational Data Stores
+(Useful when your pipelines need source or lookup systems)
+- Amazon RDS / Aurora – Managed relational databases
+- Amazon DynamoDB – Serverless NoSQL for fast key-value access
+- Amazon DocumentDB – Document database (MongoDB compatible)
+
+Security, Monitoring & Access Control
+- AWS IAM (Identity and Access Management)
+- Amazon CloudWatch
+- AWS Secrets Manager
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Storage Classes
 Availability Zone 
 S3                  - File Storage
